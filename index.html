@@ -837,12 +837,12 @@ canvas{
             <h3>Deposit Money</h3>
             <label>Select Method</label>
             <div class="method-select-row">
-                <div class="m-opt selected" id="method-bkash" onclick="selectMethod('BKash Pay' )">BKash Pay</div>
+                <div class="m-opt selected" id="method-bkash" onclick="selectMethod('bkash')">BKash Pay</div>
                 <div class="m-opt" id="method-nagad" onclick="selectMethod('nagad')">Nagad Pay</div>
             </div>
 
             <label>Amount (BDT)</label>
-            <input type="number" id="inputDepositAmt" placeholder="Enter amount (5000- 50000)" min="5000" max="50000" value="5000">
+            <input type="number" id="inputDepositAmt" placeholder="Enter amount (500-50000)" min="500" max="50000" value="5000">
 
             <div class="step-btns">
                 <button class="modal-btn cancel" onclick="closeModal('deposit')">Cancel</button>
@@ -857,7 +857,7 @@ canvas{
                 <span style="font-size: 12px; background: rgba(0,0,0,0.2); padding: 3px 8px; border-radius: 4px;">EN / ভাষা</span>
             </div>
             <div class="nagad-subhead" id="gatewaySubhead">
-                কম বা বেশি  সেন্ড মানি করবেন না
+                কম বা বেশি সেন্ড মানি করবেন না
             </div>
             <div class="nagad-body">
                 <div class="warning-text">
@@ -871,7 +871,7 @@ canvas{
                     <span id="gatewayNumber">01920885991</span>
                     <button class="copy-btn" onclick="copyNumber()">কপি</button>
                 </div>
-                <div class="number-hint">Min: 5000 BDT| Max: 50,000 BDT</div>
+                <div class="number-hint">Min: 500 BDT | Max: 50,000 BDT</div>
 
                 <div class="methods-row">
                     <div class="method-card">
@@ -889,9 +889,9 @@ canvas{
                 
                 <input type="text" id="depositTrx" class="trx-input" placeholder="TrxID অবশ্যই পূরণ করতে হবে!">
 
-                <div class="timer-text">মেয়াদ শেষঃ <span id="timerDisplay">08/26/2026, 01:25:49 PM</span></div>
+                <div class="timer-text">মেয়াদ শেষঃ <span id="timerDisplay">--/--/----, --:--:--</span></div>
 
-                <button class="confirm-nagad-btn" onclick="processDepositFinal()">নিশ্চিত করোন </button>
+                <button class="confirm-nagad-btn" onclick="processDepositFinal()">নিশ্চিত করুন</button>
 
                 <div class="footer-warning">
                     <strong>সতর্কতা:</strong><br>
@@ -991,7 +991,7 @@ function setBet(value){
     betAmount = Number(value);
     betEl.value = betAmount;
     if(!betPlaced){
-        actionSub.textContent = betAmount.toFixed(2) + "BDT";
+        actionSub.textContent = betAmount.toFixed(2) + " BDT";
     }
 }
 
@@ -1050,13 +1050,13 @@ function goToStep2() {
         subHead.style.color = "#e2136e";
         iconBg.style.background = "#e2136e";
         btnText.style.background = "#e2136e";
-        btnText.textContent = "BKash Pay ";
+        btnText.textContent = "BKash Pay";
     } else {
         headerBg.style.background = "#d11241";
         subHead.style.color = "#d11241";
         iconBg.style.background = "#d11241";
         btnText.style.background = "#d11241";
-        btnText.textContent = "nagad Pay";
+        btnText.textContent = "Nagad Pay";
     }
 
     document.getElementById('modalHeaderAmount').textContent = "BDT " + currentDepositAmt.toFixed(2);
@@ -1074,17 +1074,17 @@ function copyNumber() {
     alert("নাম্বারটি কপি করা হয়েছে: " + num);
 }
 
+// **FIXED CODE: NO AUTOMATIC BALANCE ADDITION**
 function processDepositFinal() {
-    let trx = document.getElementById('depositTrx').value;
+    let trx = document.getElementById('depositTrx').value.trim();
     if(!trx) {
         alert("দয়া করে TrxID নাম্বারটি পূরণ করুন!");
         return;
     }
 
-    balance += currentDepositAmt;
-    updateBalance();
+    // অটো টাকা যোগ হওয়া বন্ধ করা হলো
+    alert("আপনার ডিপোজিট রিকোয়েস্ট সফলভাবে গৃহীত হয়েছে! TrxID: " + trx + "\nআপনার লেনদেন যাচাইকরণ প্রক্রিয়াধীন রয়েছে।");
     
-    alert("সফলভাবে ডিপোজিট রিকোয়েস্ট গ্রহণ করা হয়েছে! " + currentDepositAmt.toFixed(2) + "BDT যোগ হয়েছে।");
     closeModal('deposit');
     document.getElementById('depositTrx').value = '';
 }
