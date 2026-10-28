@@ -1,1297 +1,1029 @@
+```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Flight Demo - Signup & Gateway Edition</title>
-
-<style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-}
-
-body{
-    min-height:100vh;
-    background:#07090d;
-    color:#fff;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-
-.game{
-    width:100%;
-    max-width:480px;
-    height: 100vh;
-    background:#0f131d;
-    overflow:hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-}
-
-@media(min-width: 481px) {
-    .game {
-        height: auto;
-        min-height: 800px;
-        border-radius: 14px;
-        border: 1px solid #1a2233;
-        box-shadow: 0 20px 50px rgba(0,0,0,.9);
-    }
-}
-
-/* --- SIGNUP PAGE STYLES --- */
-.auth-container {
-    position: absolute;
-    inset: 0;
-    background: #0f131d;
-    z-index: 200;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 24px;
-}
-
-.auth-container.hidden {
-    display: none;
-}
-
-.auth-card {
-    background: #131824;
-    border: 1px solid #222d44;
-    border-radius: 16px;
-    padding: 24px;
-    text-align: center;
-}
-
-.auth-card h2 {
-    font-size: 24px;
-    margin-bottom: 6px;
-    color: #fff;
-}
-
-.auth-card p {
-    font-size: 13px;
-    color: #8b99ae;
-    margin-bottom: 20px;
-}
-
-.auth-card label {
-    font-size: 12px;
-    color: #8b99ae;
-    display: block;
-    text-align: left;
-    margin-bottom: 6px;
-    font-weight: bold;
-}
-
-.auth-card input {
-    width: 100%;
-    padding: 14px;
-    background: #0a0e17;
-    border: 1px solid #222d44;
-    color: white;
-    border-radius: 10px;
-    margin-bottom: 16px;
-    font-size: 15px;
-    outline: none;
-}
-
-.auth-btn {
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(135deg, #00b09b, #96c93d);
-    color: #000;
-    border: 0;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,176,155,0.3);
-}
-
-/* HEADER */
-.header{
-    padding: 12px 14px;
-    background: #090c13;
-    border-bottom: 1px solid #1a2233;
-}
-
-.header-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.logo-area {
-    display: flex;
-    align-items: center;
-}
-
-.logo{
-    color:#ff334b;
-    font-size:22px;
-    font-weight:900;
-    font-style:italic;
-}
-
-.demo{
-    font-size:9px;
-    background:#252c3b;
-    color:#aeb9ca;
-    padding:2px 6px;
-    border-radius:4px;
-    margin-left:5px;
-}
-
-.balance-box {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.balance{
-    color:#00e701;
-    font-size:16px;
-    font-weight:900;
-}
-
-/* Wallet Buttons */
-.wallet-btns {
-    display: flex;
-    gap: 8px;
-    width: 100%;
-}
-
-.w-btn {
-    flex: 1;
-    border: 0;
-    padding: 11px;
-    font-size: 13px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    text-align: center;
-    transition: transform 0.1s, opacity 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-}
-
-.w-btn:active {
-    transform: scale(0.96);
-}
-
-.w-btn.deposit {
-    background: linear-gradient(135deg, #00b09b, #96c93d);
-    color: #000;
-    font-weight: 800;
-    box-shadow: 0 4px 15px rgba(0,176,155,0.3);
-}
-
-.w-btn.withdraw {
-    background: linear-gradient(135deg, #ff416c, #ff4b2b);
-    color: white;
-    box-shadow: 0 4px 15px rgba(255,65,108,0.3);
-}
-
-/* HISTORY */
-.history{
-    display:flex;
-    gap:6px;
-    padding:8px 12px;
-    background:#090c13;
-    border-bottom:1px solid #1a2233;
-    overflow-x:auto;
-    white-space:nowrap;
-}
-.history::-webkit-scrollbar { display: none; }
-
-.pill{
-    padding:5px 10px;
-    border-radius:10px;
-    background:#151c2a;
-    font-size:12px;
-    font-weight:bold;
-}
-.green{color:#00e701}
-.blue{color:#32a4ff}
-.purple{color:#c152ff}
-
-/* VIEWPORT & ANIMATED WIN POPUP */
-.viewport{
-    position:relative;
-    flex: 1;
-    min-height: 260px;
-    overflow:hidden;
-    background: radial-gradient(circle at 50% 45%,#271117 0%,#101019 45%,#080b12 80%);
-}
-
-canvas{
-    width:100%;
-    height:100%;
-    display:block;
-}
-
-.hud{
-    position:absolute;
-    inset:0;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    pointer-events:none;
-}
-
-.waiting{
-    color:#8996aa;
-    font-size:15px;
-    font-weight:bold;
-    letter-spacing:1px;
-    text-transform:uppercase;
-}
-
-.multiplier{
-    display:none;
-    font-size:56px;
-    line-height:1;
-    font-weight:900;
-    text-shadow:0 4px 25px #000;
-}
-
-.crashed{
-    display:none;
-    color:#ff334b;
-    font-weight:900;
-    font-size:18px;
-    letter-spacing:1.5px;
-}
-
-.win-popup {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50px);
-    background: linear-gradient(135deg, #11998e, #38ef7d);
-    color: #000;
-    padding: 10px 24px;
-    border-radius: 30px;
-    font-weight: 900;
-    font-size: 18px;
-    box-shadow: 0 10px 30px rgba(56, 239, 125, 0.4);
-    z-index: 50;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.win-popup.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-
-.win-popup small {
-    display: block;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #043a18;
-}
-
-/* CONTROLS */
-.controls{
-    padding:12px;
-    background: #0f131d;
-    border-top: 1px solid #1a2233;
-}
-
-.control-row{
-    display:flex;
-    gap:10px;
-}
-
-.bet-panel{
-    flex:1;
-    padding:10px;
-    background:#07090d;
-    border:1px solid #1a2233;
-    border-radius:12px;
-}
-
-.adjust{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:8px;
-}
-
-.pm{
-    width:32px;
-    height:32px;
-    border:0;
-    border-radius:50%;
-    background:#1b2435;
-    color:white;
-    font-size:18px;
-    cursor:pointer;
-}
-
-.bet-input{
-    width:80px;
-    border:0;
-    outline:0;
-    background:transparent;
-    color:white;
-    text-align:center;
-    font-weight:bold;
-    font-size:18px;
-}
-
-.presets{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:5px;
-}
-
-.preset{
-    border:0;
-    border-radius:6px;
-    padding:6px 2px;
-    background:#151c2a;
-    color:#8b99ae;
-    font-size:11px;
-    cursor:pointer;
-    font-weight: bold;
-}
-
-.action{
-    flex:1.1;
-    min-height:78px;
-    border:0;
-    border-radius:12px;
-    color:white;
-    background:#28a745;
-    font-weight:bold;
-    font-size:18px;
-    cursor:pointer;
-    box-shadow:0 4px 15px rgba(40,167,69,.3);
-}
-
-.action.cashout{
-    background:linear-gradient(135deg, #f2994a, #f2c94c);
-    color: #000;
-    box-shadow:0 4px 20px rgba(242,153,74,.4);
-}
-
-.action.lost{
-    background:#374151;
-    box-shadow:none;
-}
-
-.action small{
-    display:block;
-    margin-top:4px;
-    font-size:12px;
-    font-weight:normal;
-}
-
-.notice{
-    text-align:center;
-    color:#657287;
-    font-size:10px;
-    margin-top:10px;
-}
-
-/* MODALS */
-.modal {
-    display: none;
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 100;
-    overflow-y: auto;
-    padding: 15px;
-}
-
-.modal.active {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-/* STEP 1: Amount & Gateway Selection Modal */
-.step-card {
-    width: 100%;
-    max-width: 400px;
-    background: #131824;
-    border: 1px solid #222d44;
-    border-radius: 16px;
-    padding: 24px;
-    color: #fff;
-}
-
-.step-card h3 {
-    font-size: 20px;
-    margin-bottom: 18px;
-    text-align: center;
-}
-
-.step-card label {
-    font-size: 13px;
-    color: #8b99ae;
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-}
-
-.step-card input {
-    width: 100%;
-    padding: 14px;
-    background: #0a0e17;
-    border: 1px solid #222d44;
-    color: white;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    font-size: 16px;
-    outline: none;
-}
-
-.method-select-row {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.m-opt {
-    flex: 1;
-    padding: 14px;
-    background: #0a0e17;
-    border: 2px solid #222d44;
-    border-radius: 10px;
-    text-align: center;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 15px;
-    color: #8b99ae;
-}
-
-.m-opt.selected {
-    border-color: #00e701;
-    color: #fff;
-    background: #11221b;
-}
-
-.step-btns {
-    display: flex;
-    gap: 12px;
-}
-
-.modal-btn {
-    flex: 1;
-    padding: 15px;
-    border: 0;
-    border-radius: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 16px;
-    text-align: center;
-    transition: transform 0.1s;
-}
-
-.modal-btn:active {
-    transform: scale(0.97);
-}
-
-.modal-btn.confirm {
-    background: #00e701;
-    color: #000;
-    box-shadow: 0 4px 15px rgba(0,231,1,0.3);
-}
-
-.modal-btn.cancel {
-    background: #252c3b;
-    color: #aeb9ca;
-}
-
-/* STEP 2: Gateway UI */
-.nagad-container {
-    width: 100%;
-    max-width: 440px;
-    background: #ffffff;
-    color: #333;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    display: none;
-}
-
-.nagad-header {
-    background: #d11241;
-    color: white;
-    padding: 12px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.nagad-header h2 {
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.nagad-subhead {
-    background: #e6e6e6;
-    color: #d11241;
-    font-size: 12px;
-    font-weight: bold;
-    padding: 8px 16px;
-    text-align: center;
-}
-
-.nagad-body {
-    padding: 16px;
-}
-
-.warning-text {
-    color: #d11241;
-    font-size: 13px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 14px;
-    line-height: 1.4;
-}
-
-.input-group-label {
-    font-size: 13px;
-    font-weight: bold;
-    color: #444;
-    margin-bottom: 4px;
-    display: block;
-}
-
-.input-group-label span {
-    color: #d11241;
-}
-
-.number-box {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #f4f6f8;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 10px 14px;
-    margin-bottom: 6px;
-}
-
-.number-box span {
-    font-size: 18px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    color: #111;
-}
-
-.copy-btn {
-    background: #e2e8f0;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 12px;
-}
-
-.number-hint {
-    font-size: 11px;
-    color: #666;
-    margin-bottom: 15px;
-}
-
-.methods-row {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-bottom: 15px;
-}
-
-.method-card {
-    text-align: center;
-    font-size: 12px;
-    font-weight: bold;
-    color: #333;
-}
-
-.method-icon {
-    width: 65px;
-    height: 65px;
-    background: #d11241;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 11px;
-    margin-bottom: 5px;
-    position: relative;
-    box-shadow: 0 4px 10px rgba(209,18,65,0.3);
-}
-
-.method-icon.disabled {
-    background: #f3f4f6;
-    color: #9ca3af;
-    border: 1px solid #e5e7eb;
-    box-shadow: none;
-}
-
-.method-icon.disabled::after {
-    content: "✕";
-    position: absolute;
-    font-size: 45px;
-    color: #dc2626;
-    font-weight: 900;
-}
-
-.deposit-action-btn {
-    width: 100%;
-    background: #d11241;
-    color: white;
-    border: none;
-    padding: 14px;
-    border-radius: 6px;
-    font-size: 15px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    box-shadow: 0 4px 12px rgba(209,18,65,0.3);
-}
-
-.trx-input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #d11241;
-    border-radius: 6px;
-    font-size: 14px;
-    outline: none;
-    margin-bottom: 12px;
-}
-
-.timer-text {
-    font-size: 12px;
-    color: #444;
-    margin-bottom: 12px;
-    font-weight: bold;
-}
-
-.timer-text span {
-    color: #d11241;
-}
-
-.confirm-nagad-btn {
-    width: 100%;
-    background: #ffffff;
-    color: #333;
-    border: 1px solid #ccc;
-    padding: 12px;
-    border-radius: 6px;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-bottom: 12px;
-}
-
-.confirm-nagad-btn:hover {
-    background: #f9fafb;
-}
-
-.footer-warning {
-    font-size: 11px;
-    color: #555;
-    line-height: 1.4;
-    border-top: 1px solid #eee;
-    padding-top: 10px;
-}
-
-/* WITHDRAW MODAL */
-.modal-standard {
-    display: none;
-    position: absolute;
-    inset: 0;
-    background: rgba(5, 7, 10, 0.95);
-    z-index: 100;
-    padding: 20px;
-    flex-direction: column;
-    justify-content: center;
-}
-.modal-standard.active { display: flex; }
-.modal-card {
-    background: #131824;
-    border: 1px solid #222d44;
-    border-radius: 16px;
-    padding: 24px;
-}
-.modal-card h3 { font-size: 20px; margin-bottom: 15px; color: #fff; text-align: center; }
-.modal-card label { font-size: 12px; color: #8b99ae; display: block; margin-bottom: 6px; font-weight: bold; }
-.modal-card input { width: 100%; padding: 14px; background: #0a0e17; border: 1px solid #222d44; color: white; border-radius: 10px; margin-bottom: 15px; font-size: 16px; outline: none; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINEPRO VIP - Premium Cloud Mining Network</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        neon: {
+                            orange: '#FF5100',
+                            gold: '#FFA800',
+                            lightOrange: '#FFF0EA',
+                            softOrange: '#FFE3D6',
+                            glow: 'rgba(255, 81, 0, 0.4)'
+                        },
+                        surface: {
+                            50: '#FAFAFC',
+                            100: '#F3F4F8',
+                            200: '#E5E7EB',
+                            card: '#FFFFFF'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    },
+                    boxShadow: {
+                        'neon': '0 10px 30px -5px rgba(255, 81, 0, 0.35)',
+                        'neon-sm': '0 4px 15px rgba(255, 81, 0, 0.25)',
+                        'glass': '0 20px 40px -15px rgba(0, 0, 0, 0.05)',
+                        'card-hover': '0 25px 50px -12px rgba(255, 81, 0, 0.2)'
+                    },
+                    animation: {
+                        'spin-slow': 'spin 12s linear infinite',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+                        'float': 'float 4s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { filter: 'drop-shadow(0 0 15px rgba(255, 81, 0, 0.6)) scale(1)' },
+                            '50%': { filter: 'drop-shadow(0 0 25px rgba(255, 81, 0, 0.9)) scale(1.03)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-6px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FAFAFC;
+            color: #1E293B;
+            overflow-x: hidden;
+        }
+
+        /* Ambient glowing canvas */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 81, 0, 0.12);
+        }
+
+        .glass-orange {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 234, 0.9) 100%);
+            border: 1px solid rgba(255, 81, 0, 0.25);
+        }
+
+        .gradient-orange-btn {
+            background: linear-gradient(135deg, #FF5100 0%, #FFA800 100%);
+            box-shadow: 0 8px 25px -4px rgba(255, 81, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gradient-orange-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px -4px rgba(255, 81, 0, 0.6);
+        }
+
+        .gradient-orange-btn:active {
+            transform: translateY(1px);
+        }
+
+        .text-gradient-orange {
+            background: linear-gradient(135deg, #FF5100 0%, #FFA800 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Glowing text effect */
+        .text-glow-orange {
+            text-shadow: 0 0 12px rgba(255, 81, 0, 0.4);
+        }
+
+        /* 3D Card Perspective */
+        .card-tilt {
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            transform-style: preserve-3d;
+        }
+
+        .card-tilt:hover {
+            transform: translateY(-8px) rotateX(2deg) rotateY(-2deg);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FAFAFC;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FF5100;
+            border-radius: 9999px;
+        }
+    </style>
 </head>
+<body class="min-h-screen flex flex-col justify-between relative selection:bg-neon-orange selection:text-white">
 
-<body>
+    <!-- Particle Animation Background -->
+    <canvas id="particle-canvas"></canvas>
 
-<div class="game">
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
 
-    <!-- SIGNUP / REGISTRATION PAGE OVERLAY -->
-    <div class="auth-container" id="authContainer">
-        <div class="auth-card">
-            <h2>Welcome to Flight PRO</h2>
-            <p>Enter your details to start playing</p>
-            
-            <label>Your Name</label>
-            <input type="text" id="signupName" placeholder="e.g. Rahim Ahmed">
-
-            <label>Phone Number (bKash/Nagad)</label>
-            <input type="text" id="signupPhone" placeholder="01XXXXXXXXX">
-
-            <button class="auth-btn" onclick="handleSignup()">Start Game ✈</button>
-        </div>
-    </div>
-
-    <!-- HEADER -->
-    <div class="header">
-        <div class="header-top">
-            <div class="logo-area">
-                <span class="logo">Flight</span>
-                <span class="demo">PRO</span>
-            </div>
-            <div class="balance-box">
-                <span style="font-size:11px; color:#8290a7;" id="userNameDisplay">Player</span>
-                <div class="balance" id="balance">0.00 BDT</div>
-            </div>
-        </div>
-
-        <div class="wallet-btns">
-            <button class="w-btn deposit" onclick="openDepositStep1()">➕ Deposit</button>
-            <button class="w-btn withdraw" onclick="openModal('withdraw')">➖ Withdraw</button>
-        </div>
-    </div>
-
-    <!-- HISTORY -->
-    <div class="history" id="history">
-        <div class="pill blue">1.45x</div>
-        <div class="pill purple">3.20x</div>
-        <div class="pill green">1.12x</div>
-        <div class="pill blue">2.10x</div>
-    </div>
-
-    <!-- VIEWPORT -->
-    <div class="viewport">
-        <div class="win-popup" id="winPopup">
-            <small>Successfully Cashed Out!</small>
-            <span id="popupWinText">0.00 BDT</span>
-        </div>
-
-        <canvas id="canvas"></canvas>
-
-        <div class="hud">
-            <div class="waiting" id="waiting">Next round in 3.0s</div>
-            <div class="multiplier" id="multiplier">1.00x</div>
-            <div class="crashed" id="crashed">FLEW AWAY!</div>
-        </div>
-    </div>
-
-    <!-- CONTROLS -->
-    <div class="controls">
-        <div class="control-row">
-            <div class="bet-panel">
-                <div class="adjust">
-                    <button class="pm" onclick="changeBet(-10)">−</button>
-                    <input id="bet" class="bet-input" type="number" value="10" min="1">
-                    <button class="pm" onclick="changeBet(10)">+</button>
-                </div>
-                <div class="presets">
-                    <button class="preset" onclick="setBet(50)">50</button>
-                    <button class="preset" onclick="setBet(100)">100</button>
-                    <button class="preset" onclick="setBet(500)">500</button>
-                    <button class="preset" onclick="setBet(1000)">1000</button>
-                </div>
-            </div>
-
-            <button id="action" class="action" onclick="mainAction()">
-                Bet
-                <small id="actionSub">10.00 BDT</small>
-            </button>
-        </div>
-        <div class="notice">Secure Payment Gateway Simulation</div>
-    </div>
-
-    <!-- DEPOSIT MODAL -->
-    <div class="modal" id="depositModal">
-        <!-- STEP 1: Enter Amount & Select Method -->
-        <div class="step-card" id="depositStep1">
-            <h3>Deposit Money</h3>
-            <label>Select Method</label>
-            <div class="method-select-row">
-                <div class="m-opt selected" id="method-bkash" onclick="selectMethod('bkash')">BKash Pay</div>
-                <div class="m-opt" id="method-nagad" onclick="selectMethod('nagad')">Nagad Pay</div>
-            </div>
-
-            <label>Amount (BDT)</label>
-            <input type="number" id="inputDepositAmt" placeholder="Enter amount (500-50000)" min="500" max="50000" value="5000">
-
-            <div class="step-btns">
-                <button class="modal-btn cancel" onclick="closeModal('deposit')">Cancel</button>
-                <button class="modal-btn confirm" onclick="goToStep2()">Next</button>
-            </div>
-        </div>
-
-        <!-- STEP 2: Gateway UI with Number 01920885991 -->
-        <div class="nagad-container" id="depositStep2">
-            <div class="nagad-header" id="gatewayHeaderBg">
-                <h2 id="modalHeaderAmount">BDT 5000.00</h2>
-                <span style="font-size: 12px; background: rgba(0,0,0,0.2); padding: 3px 8px; border-radius: 4px;">EN / ভাষা</span>
-            </div>
-            <div class="nagad-subhead" id="gatewaySubhead">
-                কম বা বেশি সেন্ড মানি করবেন না
-            </div>
-            <div class="nagad-body">
-                <div class="warning-text">
-                    আপনি যদি টাকার পরিমাণ পরিবর্তন করেন (BDT <span id="currentAmountText">5000.00</span>), আপনি ক্রেডিট পেতে সক্ষম হবেন না।
-                </div>
-
-                <label class="input-group-label">ওয়ালেট নং <span>*</span></label>
-                <div style="font-size: 11px; color: #666; margin-bottom: 4px;" id="gatewayInstruction">এই নাম্বারে শুধুমাত্র টাকা পাঠান গ্রহণ করা হয়</div>
-                
-                <div class="number-box">
-                    <span id="gatewayNumber">01920885991</span>
-                    <button class="copy-btn" onclick="copyNumber()">কপি</button>
-                </div>
-                <div class="number-hint">Min: 500 BDT | Max: 50,000 BDT</div>
-
-                <div class="methods-row">
-                    <div class="method-card">
-                        <div class="method-icon" id="gatewayIconBg">সেন্ড মানি</div>
-                    </div>
-                    <div class="method-card">
-                        <div class="method-icon disabled">সেন্ড মানি</div>
-                    </div>
-                </div>
-
-                <button class="deposit-action-btn" id="gatewayButtonText">Deposit Action</button>
-
-                <label class="input-group-label">সেন্ড মানি TrxID নাম্বারটি লিখুন <span>* (প্রয়োজন)</span></label>
-                <div style="font-size: 11px; color: #007bff; margin-bottom: 6px; cursor: pointer;">কিভাবে TrxID পেতে হয় তা দেখতে ক্লিক করুন</div>
-                
-                <input type="text" id="depositTrx" class="trx-input" placeholder="TrxID অবশ্যই পূরণ করতে হবে!">
-
-                <div class="timer-text">মেয়াদ শেষঃ <span id="timerDisplay">--/--/----, --:--:--</span></div>
-
-                <button class="confirm-nagad-btn" onclick="processDepositFinal()">নিশ্চিত করুন</button>
-
-                <div class="footer-warning">
-                    <strong>সতর্কতা:</strong><br>
-                    লেনদেন আইডি সঠিকভাবে পূরণ করতে হবে, অন্যথায় স্কোর ব্যর্থ হবে!<br><br>
-                    অনুগ্রহ করে নিশ্চিত হয়ে নিন যে আপনি সঠিক ওয়ালেট নাম্বারে টাকা পাঠিয়েছেন।
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- WITHDRAW MODAL -->
-    <div class="modal-standard" id="withdrawModal">
-        <div class="modal-card">
-            <h3>Withdraw Money</h3>
-            <label>BKash Pay</label>
-            <input type="text" id="withdrawAccount" placeholder="BKash Pay">
-            <label>Withdraw Amount (BDT)</label>
-            <input type="number" id="withdrawAmount" placeholder="e.g. 1000" min="100" max="50000">
-            <div class="step-btns" style="margin-top: 15px;">
-                <button class="modal-btn cancel" onclick="closeModal('withdraw')">Cancel</button>
-                <button class="modal-btn confirm" onclick="processWithdraw()">Request Withdraw</button>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<script>
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-
-const balanceEl = document.getElementById("balance");
-const historyEl = document.getElementById("history");
-const waitingEl = document.getElementById("waiting");
-const multiplierEl = document.getElementById("multiplier");
-const crashedEl = document.getElementById("crashed");
-const actionEl = document.getElementById("action");
-const actionSub = document.getElementById("actionSub");
-const betEl = document.getElementById("bet");
-const winPopup = document.getElementById("winPopup");
-const popupWinText = document.getElementById("popupWinText");
-
-let balance = Number(localStorage.getItem("flight_balance")) || 0;
-let savedName = localStorage.getItem("flight_username") || "";
-
-let betAmount = 10;
-let status = "WAITING";
-let multiplier = 1;
-let crashPoint = 2;
-let betPlaced = false;
-let cashedOut = false;
-let timer = null;
-let roundTimer = null;
-let progress = 0;
-
-let chosenMethod = 'bkash';
-let currentDepositAmt = 1000;
-
-// Check Signup on load
-window.addEventListener("DOMContentLoaded", () => {
-    if(savedName) {
-        document.getElementById("authContainer").classList.add("hidden");
-        document.getElementById("userNameDisplay").textContent = savedName;
-    }
-});
-
-function handleSignup() {
-    let name = document.getElementById("signupName").value.trim();
-    let phone = document.getElementById("signupPhone").value.trim();
-
-    if(!name || !phone) {
-        alert("দয়া করে নাম এবং ফোন নাম্বার উভয়ই পূরণ করুন!");
-        return;
-    }
-
-    localStorage.setItem("flight_username", name);
-    document.getElementById("userNameDisplay").textContent = name;
-    document.getElementById("authContainer").classList.add("hidden");
-    startWaiting();
-}
-
-function resizeCanvas(){
-    const box = canvas.parentElement;
-    canvas.width = box.clientWidth;
-    canvas.height = box.clientHeight;
-}
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
-
-function updateBalance(){
-    balanceEl.textContent = balance.toFixed(2) + " BDT";
-    localStorage.setItem("flight_balance", balance);
-}
-updateBalance();
-
-function setBet(value){
-    betAmount = Number(value);
-    betEl.value = betAmount;
-    if(!betPlaced){
-        actionSub.textContent = betAmount.toFixed(2) + " BDT";
-    }
-}
-
-function changeBet(value){
-    let current = Number(betEl.value) || 10;
-    current += value;
-    current = Math.max(1, current);
-    setBet(current);
-}
-
-betEl.addEventListener("input", ()=>{
-    betAmount = Number(betEl.value) || 1;
-    if(!betPlaced){
-        actionSub.textContent = betAmount.toFixed(2) + " BDT";
-    }
-});
-
-function openModal(type) {
-    document.getElementById(type + 'Modal').classList.add('active');
-}
-
-function closeModal(type) {
-    document.getElementById(type + 'Modal').classList.remove('active');
-}
-
-function openDepositStep1() {
-    document.getElementById('depositModal').classList.add('active');
-    document.getElementById('depositStep1').style.display = 'block';
-    document.getElementById('depositStep2').style.display = 'none';
-}
-
-function selectMethod(m) {
-    chosenMethod = m;
-    document.getElementById('method-bkash').classList.toggle('selected', m === 'bkash');
-    document.getElementById('method-nagad').classList.toggle('selected', m === 'nagad');
-}
-
-function goToStep2() {
-    let amt = Number(document.getElementById('inputDepositAmt').value);
-    if(amt < 500 || amt > 50000) {
-        alert("ডিপোজিট অ্যামাউন্ট অবশ্যই ৫০০ থেকে ৫০,০০০ টাকার মধ্যে হতে হবে।");
-        return;
-    }
-    currentDepositAmt = amt;
-
-    document.getElementById('depositStep1').style.display = 'none';
-    document.getElementById('depositStep2').style.display = 'block';
-
-    let headerBg = document.getElementById('gatewayHeaderBg');
-    let subHead = document.getElementById('gatewaySubhead');
-    let iconBg = document.getElementById('gatewayIconBg');
-    let btnText = document.getElementById('gatewayButtonText');
-
-    if(chosenMethod === 'bkash') {
-        headerBg.style.background = "#e2136e";
-        subHead.style.color = "#e2136e";
-        iconBg.style.background = "#e2136e";
-        btnText.style.background = "#e2136e";
-        btnText.textContent = "BKash Pay";
-    } else {
-        headerBg.style.background = "#d11241";
-        subHead.style.color = "#d11241";
-        iconBg.style.background = "#d11241";
-        btnText.style.background = "#d11241";
-        btnText.textContent = "Nagad Pay";
-    }
-
-    document.getElementById('modalHeaderAmount').textContent = "BDT " + currentDepositAmt.toFixed(2);
-    document.getElementById('currentAmountText').textContent = currentDepositAmt.toFixed(2);
-    document.getElementById('gatewayNumber').textContent = "01920885991";
-
-    let d = new Date();
-    d.setMinutes(d.getMinutes() + 10);
-    document.getElementById('timerDisplay').textContent = d.toLocaleString();
-}
-
-function copyNumber() {
-    let num = document.getElementById('gatewayNumber').innerText;
-    navigator.clipboard.writeText(num);
-    alert("নাম্বারটি কপি করা হয়েছে: " + num);
-}
-
-// **FIXED CODE: NO AUTOMATIC BALANCE ADDITION**
-function processDepositFinal() {
-    let trx = document.getElementById('depositTrx').value.trim();
-    if(!trx) {
-        alert("দয়া করে TrxID নাম্বারটি পূরণ করুন!");
-        return;
-    }
-
-    // অটো টাকা যোগ হওয়া বন্ধ করা হলো
-    alert("আপনার ডিপোজিট রিকোয়েস্ট সফলভাবে গৃহীত হয়েছে! TrxID: " + trx + "\nআপনার লেনদেন যাচাইকরণ প্রক্রিয়াধীন রয়েছে।");
-    
-    closeModal('deposit');
-    document.getElementById('depositTrx').value = '';
-}
-
-function processWithdraw() {
-    let amt = Number(document.getElementById('withdrawAmount').value);
-    let acc = document.getElementById('withdrawAccount').value;
-
-    if(amt < 100 || amt > 50000) {
-        alert("Withdrawal amount must be between 100 BDT and 50,000 BDT.");
-        return;
-    }
-    if(amt > balance) {
-        alert("Insufficient balance for withdrawal.");
-        return;
-    }
-    if(!acc) {
-        alert("Please enter your account number.");
-        return;
-    }
-
-    balance -= amt;
-    updateBalance();
-    alert("Withdrawal request of " + amt.toFixed(2) + " BDT submitted successfully.");
-    closeModal('withdraw');
-    document.getElementById('withdrawAmount').value = '';
-    document.getElementById('withdrawAccount').value = '';
-}
-
-function showWinAnimation(amount) {
-    popupWinText.textContent = amount.toFixed(2) + " BDT";
-    winPopup.classList.add("show");
-    setTimeout(() => {
-        winPopup.classList.remove("show");
-    }, 2500);
-}
-
-function mainAction(){
-    betAmount = Number(betEl.value);
-    if(!betAmount || betAmount <= 0){
-        alert("Enter a valid amount.");
-        return;
-    }
-
-    if(status === "WAITING" && !betPlaced){
-        if(balance <= 0 || betAmount > balance){
-            alert("আপনার ব্যালেন্স নেই বা অপর্যাপ্ত! দয়া করে ডিপোজিট করুন।");
-            openDepositStep1();
-            return;
-        }
-        balance -= betAmount;
-        updateBalance();
-        betPlaced = true;
-        cashedOut = false;
-        actionEl.className = "action cashout";
-        actionEl.innerHTML = 'Cashout <small id="cashoutValue">' + betAmount.toFixed(2) + ' BDT</small>';
-        return;
-    }
-
-    if(status === "FLYING" && betPlaced && !cashedOut){
-        cashedOut = true;
-        const winnings = betAmount * multiplier;
-        balance += winnings;
-        updateBalance();
+    <!-- MAIN APP WRAPPER -->
+    <div id="app-container" class="hidden flex-col min-h-screen relative z-10 pb-24 md:pb-6">
         
-        showWinAnimation(winnings);
+        <!-- FLOATING HEADER -->
+        <header class="sticky top-4 z-40 mx-4 lg:mx-auto max-w-7xl mt-3">
+            <div class="glass-panel rounded-3xl px-5 py-3.5 shadow-glass flex items-center justify-between border border-neon-orange/20">
+                
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-neon-orange to-neon-gold flex items-center justify-center text-white text-xl shadow-neon-sm">
+                        <i class="fa-solid fa-cube animate-spin-slow"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-black text-xl tracking-tight text-slate-900 flex items-center gap-1.5">
+                            MINE<span class="text-gradient-orange">PRO</span>
+                            <span class="text-[10px] bg-neon-lightOrange text-neon-orange border border-neon-orange/30 px-2 py-0.5 rounded-full uppercase font-black tracking-wider">VIP</span>
+                        </h1>
+                        <p class="text-[10px] text-slate-400 font-semibold -mt-1 tracking-wider uppercase">Light Mining Protocol</p>
+                    </div>
+                </div>
 
-        actionEl.className = "action lost";
-        actionEl.innerHTML = 'Won <small>' + winnings.toFixed(2) + ' BDT</small>';
-    }
-}
+                <!-- Wallet Balance Counter -->
+                <div class="flex items-center gap-3">
+                    <div class="glass-orange px-4 py-2 rounded-2xl flex items-center gap-3 shadow-sm">
+                        <div class="w-9 h-9 rounded-xl bg-neon-orange/15 text-neon-orange flex items-center justify-center font-black text-lg">
+                            ৳
+                        </div>
+                        <div>
+                            <div class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Main Balance</div>
+                            <div class="text-lg font-black text-slate-900 font-mono" id="header-balance">৳ 0.00</div>
+                        </div>
+                    </div>
 
-function startWaiting(){
-    if(!savedName && document.getElementById("authContainer").classList.contains("hidden") === false) return;
-    
-    clearInterval(timer);
-    status = "WAITING";
-    betPlaced = false;
-    cashedOut = false;
-    waitingEl.style.display = "block";
-    multiplierEl.style.display = "none";
-    crashedEl.style.display = "none";
-    actionEl.className = "action";
-    actionEl.innerHTML = 'Bet <small id="actionSub">' + betAmount.toFixed(2) + ' BDT</small>';
-    actionSub.textContent = betAmount.toFixed(2) + " BDT";
+                    <!-- Desktop Navigation Buttons -->
+                    <div class="hidden md:flex items-center gap-2">
+                        <button onclick="switchTab('dashboard')" class="nav-btn px-4 py-2.5 rounded-2xl text-sm font-bold transition text-slate-600 hover:text-neon-orange hover:bg-neon-lightOrange" data-tab="dashboard">
+                            <i class="fa-solid fa-microchip mr-1.5 text-neon-orange"></i> Packages
+                        </button>
+                        <button onclick="switchTab('deposit')" class="nav-btn px-4 py-2.5 rounded-2xl text-sm font-bold transition text-slate-600 hover:text-neon-orange hover:bg-neon-lightOrange" data-tab="deposit">
+                            <i class="fa-solid fa-wallet mr-1.5 text-emerald-500"></i> Deposit
+                        </button>
+                        <button onclick="switchTab('withdraw')" class="nav-btn px-4 py-2.5 rounded-2xl text-sm font-bold transition text-slate-600 hover:text-neon-orange hover:bg-neon-lightOrange" data-tab="withdraw">
+                            <i class="fa-solid fa-money-bill-transfer mr-1.5 text-amber-500"></i> Withdraw
+                        </button>
+                        <button onclick="switchTab('history')" class="nav-btn px-4 py-2.5 rounded-2xl text-sm font-bold transition text-slate-600 hover:text-neon-orange hover:bg-neon-lightOrange" data-tab="history">
+                            <i class="fa-solid fa-clock-rotate-left mr-1.5 text-blue-500"></i> History
+                        </button>
+                        <button onclick="logout()" class="ml-2 w-10 h-10 rounded-2xl bg-rose-50 text-rose-500 hover:bg-rose-100 flex items-center justify-center font-bold transition border border-rose-200">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-    let count = 3;
-    waitingEl.textContent = "Next round in " + count.toFixed(1) + "s";
+        <!-- MAIN CONTAINER CONTENT -->
+        <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-1">
+            
+            <!-- LIVE MINING REACTOR & ENGINE HERO BANNER -->
+            <div class="glass-orange rounded-3xl p-6 mb-8 relative overflow-hidden shadow-neon-sm border border-neon-orange/30">
+                <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-neon-orange/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
+                    
+                    <!-- Left: Core Status & User Info -->
+                    <div class="flex items-center gap-5">
+                        <div class="relative">
+                            <!-- Animated Glowing Reactor Core -->
+                            <div class="w-20 h-20 rounded-2xl bg-white border-2 border-neon-orange flex items-center justify-center text-neon-orange text-3xl font-extrabold shadow-neon animate-pulse-glow">
+                                <i class="fa-solid fa-atom animate-spin-slow"></i>
+                            </div>
+                            <span class="absolute -top-1.5 -right-1.5 flex h-4 w-4">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-4 w-4 bg-emerald-500"></span>
+                            </span>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h2 class="text-2xl font-black text-slate-900 tracking-tight">Quantum Node Engine</h2>
+                                <span class="bg-emerald-100 text-emerald-600 text-[10px] px-2.5 py-1 rounded-full font-black border border-emerald-300 uppercase tracking-wide">ACTIVE HARVEST</span>
+                            </div>
+                            <p class="text-slate-500 text-sm font-medium mt-0.5" id="user-welcome-txt">Welcome back, VIP Miner!</p>
+                            <div class="flex items-center gap-3 mt-2 text-xs font-mono font-semibold text-slate-600">
+                                <span><i class="fa-solid fa-gauge text-neon-orange mr-1"></i> Hash Rate: <strong id="live-hashrate" class="text-slate-900">485.2 TH/s</strong></span>
+                                <span>•</span>
+                                <span><i class="fa-solid fa-bolt text-amber-500 mr-1"></i> Uptime: <strong class="text-slate-900">99.98%</strong></span>
+                            </div>
+                        </div>
+                    </div>
 
-    clearInterval(roundTimer);
-    roundTimer = setInterval(()=>{
-        count -= .1;
-        if(count <= 0){
-            clearInterval(roundTimer);
-            startFlight();
-            return;
+                    <!-- Right: Daily Mining Return & Claim Button -->
+                    <div class="flex flex-col sm:flex-row items-center gap-5 w-full lg:w-auto bg-white/70 p-4 rounded-2xl border border-neon-orange/20">
+                        <div class="text-center sm:text-right w-full sm:w-auto">
+                            <div class="text-xs text-slate-500 font-extrabold uppercase tracking-wider">Available Daily Profit</div>
+                            <div class="text-2xl font-black text-emerald-600 font-mono mt-0.5" id="daily-earning-total">৳ 0.00 / Day</div>
+                        </div>
+                        <button id="claim-mining-btn" onclick="claimDailyProfit()" class="gradient-orange-btn w-full sm:w-auto text-white font-extrabold px-7 py-3.5 rounded-2xl text-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-bolt-lightning text-amber-300"></i> Claim Daily Profit
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DASHBOARD: VIP MINING PACKAGES -->
+            <section id="tab-dashboard" class="tab-content space-y-6">
+                <!-- Header Title & Active Stats Widget -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-900 flex items-center gap-2 tracking-tight">
+                            <i class="fa-solid fa-layer-group text-neon-orange"></i> VIP Mining Nodes
+                        </h2>
+                        <p class="text-slate-500 text-sm">Select a VIP hardware tier to activate 60-day automated profit yield</p>
+                    </div>
+                    <div class="bg-neon-lightOrange px-4 py-2 rounded-2xl border border-neon-orange/30 text-xs font-bold text-neon-orange flex items-center gap-2">
+                        <i class="fa-regular fa-clock"></i> Package Term: <strong>60 Days (Fixed)</strong>
+                    </div>
+                </div>
+
+                <!-- Active Mining Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-4">
+                    <div class="glass-panel p-5 rounded-3xl flex items-center justify-between border-l-4 border-l-neon-orange shadow-glass">
+                        <div>
+                            <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Active VIP Rigs</p>
+                            <h3 class="text-3xl font-black text-slate-900 font-mono mt-1" id="active-plans-count">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-neon-lightOrange text-neon-orange flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-server"></i>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-5 rounded-3xl flex items-center justify-between border-l-4 border-l-emerald-500 shadow-glass">
+                        <div>
+                            <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Total Profit Harvested</p>
+                            <h3 class="text-3xl font-black text-emerald-600 font-mono mt-1" id="total-mined-amount">৳ 0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-5 rounded-3xl flex items-center justify-between border-l-4 border-l-blue-500 shadow-glass">
+                        <div>
+                            <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Last Reward Claim</p>
+                            <h3 class="text-base font-bold text-slate-800 mt-1" id="last-claim-time">Never</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIP PACKAGES GRID (VIP 1 to VIP 10) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="vip-cards-container">
+                    <!-- VIP Cards generated via JS -->
+                </div>
+            </section>
+
+            <!-- VIEW 2: DEPOSIT PAGE -->
+            <section id="tab-deposit" class="tab-content hidden max-w-2xl mx-auto space-y-6">
+                <div class="text-center">
+                    <h2 class="text-3xl font-black text-slate-900 flex items-center justify-center gap-2 tracking-tight">
+                        <i class="fa-solid fa-wallet text-emerald-500"></i> Deposit Funds
+                    </h2>
+                    <p class="text-slate-500 text-sm mt-1 font-medium">Add balance using Mobile Banking (bKash or Nagad Send Money)</p>
+                </div>
+
+                <div class="glass-panel p-7 rounded-3xl space-y-6 shadow-glass border border-neon-orange/20">
+                    
+                    <!-- Gateway Toggle -->
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-slate-400 font-black mb-3">1. Choose Gateway</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button type="button" onclick="selectPaymentMethod('bkash')" id="btn-method-bkash" class="glass-panel p-4 rounded-2xl flex items-center justify-center gap-3 border-2 border-pink-500 bg-pink-50 text-pink-600 font-extrabold transition shadow-sm">
+                                <span class="w-3.5 h-3.5 rounded-full bg-pink-500 inline-block shadow-sm"></span> bKash Personal
+                            </button>
+                            <button type="button" onclick="selectPaymentMethod('nagad')" id="btn-method-nagad" class="glass-panel p-4 rounded-2xl flex items-center justify-center gap-3 border-2 border-transparent text-slate-400 font-extrabold hover:border-orange-300 transition">
+                                <span class="w-3.5 h-3.5 rounded-full bg-orange-500 inline-block shadow-sm"></span> Nagad Personal
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Admin Number Box -->
+                    <div class="p-5 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-neon-sm">
+                        <div>
+                            <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Send Money Number (<span id="selected-gateway-label" class="text-pink-400 font-bold">bKash</span>)</p>
+                            <p class="text-2xl font-black font-mono tracking-widest text-amber-400 mt-1" id="deposit-number-text">01920885991</p>
+                        </div>
+                        <button onclick="copyDepositNumber()" class="w-full sm:w-auto px-5 py-3 rounded-xl bg-neon-orange hover:bg-neon-orange/90 text-white text-xs font-black uppercase tracking-wider transition shadow-neon-sm flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-copy text-sm"></i> Copy Number
+                        </button>
+                    </div>
+
+                    <!-- Process Steps -->
+                    <div class="bg-neon-lightOrange/60 p-4 rounded-2xl border border-neon-orange/20 text-xs text-slate-700 space-y-1.5 font-medium">
+                        <p class="font-bold text-neon-orange flex items-center gap-1.5 mb-1 text-sm">
+                            <i class="fa-solid fa-circle-info"></i> Deposit Instructions:
+                        </p>
+                        <p>1. Open <strong class="text-slate-900">bKash / Nagad</strong> app and choose <strong>"Send Money"</strong>.</p>
+                        <p>2. Enter Receiver Number: <strong class="text-neon-orange font-mono font-bold">01920885991</strong></p>
+                        <p>3. After sending money, copy the <strong>Transaction ID (TrxID)</strong> and paste below.</p>
+                    </div>
+
+                    <!-- Deposit Form -->
+                    <form id="deposit-form" onsubmit="handleDepositSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-slate-500 font-extrabold mb-1">Deposit Amount (TK)</label>
+                            <input type="number" id="deposit-amount" min="100" placeholder="e.g. 500" required class="w-full bg-surface-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-slate-900 font-black font-mono text-lg focus:outline-none focus:border-neon-orange focus:ring-2 focus:ring-neon-orange/20 transition">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-slate-500 font-extrabold mb-1">Sender Mobile Number</label>
+                            <input type="text" id="deposit-sender" placeholder="017XXXXXXXX" required class="w-full bg-surface-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-slate-900 font-bold focus:outline-none focus:border-neon-orange focus:ring-2 focus:ring-neon-orange/20 transition">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-slate-500 font-extrabold mb-1">Transaction ID (TrxID)</label>
+                            <input type="text" id="deposit-trxid" placeholder="e.g. B8X9K0LM2P" required class="w-full bg-surface-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-slate-900 font-mono font-black uppercase focus:outline-none focus:border-neon-orange focus:ring-2 focus:ring-neon-orange/20 transition">
+                        </div>
+
+                        <button type="submit" class="gradient-orange-btn w-full py-4 rounded-2xl text-white font-black text-base shadow-neon flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Submit Deposit Request
+                        </button>
+                    </form>
+
+                    <!-- Test Tool for 2 Hours Simulation -->
+                    <div class="mt-4 pt-4 border-t border-slate-200 flex justify-center">
+                        <button type="button" onclick="fastForwardPendingDeposits()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300 px-4 py-2 rounded-xl text-xs font-black transition flex items-center gap-2">
+                            <i class="fa-solid fa-bolt text-amber-500"></i> ⚡ Speed Up Test (Fast Forward 2 Hours)
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FLOATING MOBILE BOTTOM NAVIGATION -->
+        <nav class="md:hidden fixed bottom-4 left-4 right-4 glass-panel rounded-3xl py-3 px-4 flex justify-around items-center z-40 border border-neon-orange/30 shadow-neon">
+            <button onclick="switchTab('dashboard')" class="nav-btn-mobile flex flex-col items-center gap-1 text-slate-500 font-extrabold text-[10px]" data-tab="dashboard">
+                <i class="fa-solid fa-microchip text-lg"></i>
+                <span>VIP Nodes</span>
+            </button>
+            <button onclick="switchTab('deposit')" class="nav-btn-mobile flex flex-col items-center gap-1 text-slate-500 font-extrabold text-[10px]" data-tab="deposit">
+                <i class="fa-solid fa-wallet text-lg"></i>
+                <span>Deposit</span>
+            </button>
+            <button onclick="switchTab('withdraw')" class="nav-btn-mobile flex flex-col items-center gap-1 text-slate-500 font-extrabold text-[10px]" data-tab="withdraw">
+                <i class="fa-solid fa-money-bill-transfer text-lg"></i>
+                <span>Withdraw</span>
+            </button>
+            <button onclick="switchTab('history')" class="nav-btn-mobile flex flex-col items-center gap-1 text-slate-500 font-extrabold text-[10px]" data-tab="history">
+                <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                <span>History</span>
+            </button>
+            <button onclick="logout()" class="flex flex-col items-center gap-1 text-rose-500 font-extrabold text-[10px]">
+                <i class="fa-solid fa-right-from-bracket text-lg"></i>
+                <span>Logout</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- AUTHENTICATION CONTAINER (LOGIN / SIGNUP) -->
+    <div id="auth-container" class="min-h-screen flex items-center justify-center p-4 relative z-10">
+        <div class="glass-panel max-w-md w-full p-8 rounded-3xl space-y-6 shadow-neon border border-neon-orange/30 relative overflow-hidden">
+            
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-neon-orange to-neon-gold mx-auto flex items-center justify-center text-white text-3xl font-black shadow-neon animate-float">
+                    <i class="fa-solid fa-cube animate-spin-slow"></i>
+                </div>
+                <h2 class="text-3xl font-black text-slate-900 tracking-tight">MINE<span class="text-gradient-orange">PRO</span> VIP</h2>
+                <p class="text-slate-500 text-xs font-semibold">High-Yield Cloud Mining Network</p>
+            </div>
+
+            <!-- Auth Switcher Tabs -->
+            <div class="grid grid-cols-2 bg-surface-100 p-1.5 rounded-2xl border border-slate-200">
+                <button id="tab-login-btn" onclick="toggleAuthMode('login')" class="py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition bg-white text-neon-orange shadow-sm">
+                    Login
+                </button>
+                <button id="tab-signup-btn" onclick="toggleAuthMode('signup')" class="py-2.5 rounded-xl font-black text-xs uppercase tracking-wider text-slate-400 transition hover:text-slate-700">
+                    Register
+                </button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-500 font-extrabold mb-1">Mobile / Account</label>
+                    <input type="text" id="login-identifier" placeholder="017XXXXXXXX" required class="w-full bg-surface-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-slate-900 font-bold focus:outline-none focus:border-neon-orange focus:ring-2 focus:ring-neon-orange/20 transition">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-500 font-extrabold mb-1">Password</label>
+                    <input type="password" id="login-password" placeholder="••••••••" required class="w-full bg-surface-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-slate-900 font-bold focus:outline-none focus:border-neon-orange focus:ring-2 focus:ring-neon-orange/20 transition">
+                </div>
+                <button type="submit" class="gradient-orange-btn w-full py-4 rounded-2xl text-white font-black text-base shadow-neon flex items-center justify-center gap-2">
+                    Access Terminal <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                </button>
+            </form>
+
+            <!-- SIGNUP FORM -->
+            <form id="signup-form" onsubmit="handleSignup(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-500 font-extrabold mb-1">Full Name</label>
+                    <input type="text" id="signup-name" placeholder="John Doe" required class="w-full bg-surface-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-slate-900 font-bold focus:outline-none focus:border-neon-orange focus:ring-2 focus:ring-neon-orange/20 transition">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-500 font-extrabold mb-1">Mobile Number</label>
+                    <input type="text" id="signup-mobile" placeholder="017XXXXXXXX" required class="w-full bg-surface-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-slate-900 font-bold focus:outline-none focus:border-neon-orange focus:ring-2 focus:ring-neon-orange/20 transition">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-500 font-extrabold mb-1">Password</label>
+                    <input type="password" id="signup-password" placeholder="••••••••" required class="w-full bg-surface-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-slate-900 font-bold focus:outline-none focus:border-neon-orange focus:ring-2 focus:ring-neon-orange/20 transition">
+                </div>
+                <button type="submit" class="gradient-orange-btn w-full py-4 rounded-2xl text-white font-black text-base shadow-neon flex items-center justify-center gap-2">
+                    Create Account <i class="fa-solid fa-user-plus"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // VIP PLAN CONFIGURATIONS (VIP 1 to VIP 10)
+        const VIP_PLANS = [
+            { id: 1, name: "VIP 1", price: 500, daily: 150, days: 60, icon: "fa-bolt", badge: "Starter Node" },
+            { id: 2, name: "VIP 2", price: 1000, daily: 320, days: 60, icon: "fa-microchip", badge: "Standard Rig" },
+            { id: 3, name: "VIP 3", price: 2500, daily: 850, days: 60, icon: "fa-server", badge: "Advanced Cluster" },
+            { id: 4, name: "VIP 4", price: 5000, daily: 1800, days: 60, icon: "fa-network-wired", badge: "Pro Mining Core" },
+            { id: 5, name: "VIP 5", price: 10000, daily: 3800, days: 60, icon: "fa-cubes", badge: "Master Server" },
+            { id: 6, name: "VIP 6", price: 20000, daily: 8000, days: 60, icon: "fa-database", badge: "Quantum Array" },
+            { id: 7, name: "VIP 7", price: 35000, daily: 14500, days: 60, icon: "fa-brain", badge: "Neural Grid" },
+            { id: 8, name: "VIP 8", price: 50000, daily: 22000, days: 60, icon: "fa-atom", badge: "Supercomputer" },
+            { id: 9, name: "VIP 9", price: 75000, daily: 35000, days: 60, icon: "fa-fire", badge: "Titanium Pod" },
+            { id: 10, name: "VIP 10", price: 100000, daily: 50000, days: 60, icon: "fa-crown", badge: "Apex Engine" }
+        ];
+
+        let currentUser = null;
+        let selectedGateway = 'bkash';
+
+        // ON LOAD INITIALIZATION
+        window.onload = function() {
+            initParticles();
+            initLocalStorage();
+            checkSession();
+            renderVipCards();
+            startLiveHashrate();
+            startDepositStatusChecker();
+        };
+
+        // CANVAS PARTICLE ANIMATION
+        function initParticles() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const particles = Array.from({ length: 35 }, () => ({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 3 + 1,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4,
+                alpha: Math.random() * 0.4 + 0.1
+            }));
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < 0) p.x = width;
+                    if (p.x > width) p.x = 0;
+                    if (p.y < 0) p.y = height;
+                    if (p.y > height) p.y = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 81, 0, ${p.alpha})`;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#FF5100';
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(animate);
+            }
+            animate();
         }
-        waitingEl.textContent = "Next round in " + count.toFixed(1) + "s";
-    },100);
-}
 
-function startFlight(){
-    status = "FLYING";
-    multiplier = 1;
-    progress = 0;
-    waitingEl.style.display = "none";
-    multiplierEl.style.display = "block";
-    crashedEl.style.display = "none";
-
-    crashPoint = Number((1.20 + Math.random() * 6.80).toFixed(2));
-
-    timer = setInterval(()=>{
-        multiplier += .025;
-        progress += .018;
-        multiplierEl.textContent = multiplier.toFixed(2) + "x";
-
-        if(betPlaced && !cashedOut){
-            const cash = document.getElementById("cashoutValue");
-            if(cash){
-                cash.textContent = (betAmount * multiplier).toFixed(2) + " BDT";
+        // LOCALSTORAGE INITIALIZATION
+        function initLocalStorage() {
+            if (!localStorage.getItem('users')) {
+                localStorage.setItem('users', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('transactions')) {
+                localStorage.setItem('transactions', JSON.stringify([]));
             }
         }
 
-        drawFlight();
-
-        if(multiplier >= crashPoint){
-            crash();
+        // CHECK SESSION
+        function checkSession() {
+            const loggedInMobile = localStorage.getItem('session_user');
+            if (loggedInMobile) {
+                const users = JSON.parse(localStorage.getItem('users'));
+                const user = users.find(u => u.mobile === loggedInMobile);
+                if (user) {
+                    currentUser = user;
+                    showAppUI();
+                    return;
+                }
+            }
+            showAuthUI();
         }
-    },50);
-}
 
-function drawFlight(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function showAppUI() {
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            document.getElementById('app-container').classList.add('flex');
+            updateUI();
+            switchTab('dashboard');
+        }
 
-    ctx.strokeStyle = "rgba(255,255,255,.035)";
-    ctx.lineWidth = 1;
+        function showAuthUI() {
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('flex');
+            document.getElementById('auth-container').classList.remove('hidden');
+        }
 
-    for(let x=0; x<canvas.width; x+=35){
-        ctx.beginPath();
-        ctx.moveTo(x,0);
-        ctx.lineTo(x,canvas.height);
-        ctx.stroke();
-    }
-    for(let y=0; y<canvas.height; y+=35){
-        ctx.beginPath();
-        ctx.moveTo(0,y);
-        ctx.lineTo(canvas.width,y);
-        ctx.stroke();
-    }
+        // AUTHENTICATION LOGIC
+        function toggleAuthMode(mode) {
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const loginBtn = document.getElementById('tab-login-btn');
+            const signupBtn = document.getElementById('tab-signup-btn');
 
-    let endX = Math.min(progress * 135, canvas.width - 35);
-    let endY = Math.min(progress * 90, canvas.height - 35);
+            if (mode === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                loginBtn.className = "py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition bg-white text-neon-orange shadow-sm";
+                signupBtn.className = "py-2.5 rounded-xl font-black text-xs uppercase tracking-wider text-slate-400 transition hover:text-slate-700";
+            } else {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                signupBtn.className = "py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition bg-white text-neon-orange shadow-sm";
+                loginBtn.className = "py-2.5 rounded-xl font-black text-xs uppercase tracking-wider text-slate-400 transition hover:text-slate-700";
+            }
+        }
 
-    ctx.beginPath();
-    ctx.moveTo(0,canvas.height);
-    ctx.quadraticCurveTo(endX/2, canvas.height, endX, canvas.height-endY);
-    ctx.lineTo(endX,canvas.height);
-    ctx.closePath();
-    ctx.fillStyle = "rgba(255,30,55,.20)";
-    ctx.fill();
+        function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value.trim();
+            const mobile = document.getElementById('signup-mobile').value.trim();
+            const password = document.getElementById('signup-password').value;
 
-    ctx.beginPath();
-    ctx.moveTo(0,canvas.height);
-    ctx.quadraticCurveTo(endX/2, canvas.height, endX, canvas.height-endY);
-    ctx.strokeStyle = "#ff334b";
-    ctx.lineWidth = 3.5;
-    ctx.stroke();
+            const users = JSON.parse(localStorage.getItem('users'));
+            if (users.some(u => u.mobile === mobile)) {
+                showToast("Mobile number is already registered!", "error");
+                return;
+            }
 
-    ctx.save();
-    ctx.translate(endX, canvas.height-endY);
-    ctx.rotate(-.35);
-    ctx.font = "26px Arial";
-    ctx.fillText("✈", -12, 8);
-    ctx.restore();
-}
+            const newUser = {
+                name,
+                mobile,
+                password,
+                balance: 0,
+                activePlans: [],
+                totalMined: 0,
+                lastClaimDate: null
+            };
 
-function crash(){
-    clearInterval(timer);
-    status = "CRASHED";
-    multiplierEl.style.display = "none";
-    crashedEl.style.display = "block";
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('session_user', mobile);
+            currentUser = newUser;
 
-    const item = document.createElement("div");
-    let cls = multiplier >= 3 ? "purple" : multiplier >= 2 ? "blue" : "green";
-    item.className = "pill " + cls;
-    item.textContent = multiplier.toFixed(2) + "x";
-    historyEl.prepend(item);
+            showToast("Registration Successful!", "success");
+            showAppUI();
+        }
 
-    while(historyEl.children.length > 12){
-        historyEl.lastElementChild.remove();
-    }
+        function handleLogin(e) {
+            e.preventDefault();
+            const identifier = document.getElementById('login-identifier').value.trim();
+            const password = document.getElementById('login-password').value;
 
-    if(betPlaced && !cashedOut){
-        actionEl.className = "action lost";
-        actionEl.innerHTML = "Lost <small>" + betAmount.toFixed(2) + " BDT</small>";
-    }
+            const users = JSON.parse(localStorage.getItem('users'));
+            const user = users.find(u => u.mobile === identifier && u.password === password);
 
-    setTimeout(()=>{
-        startWaiting();
-    },2000);
-}
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('session_user', user.mobile);
+                showToast("Welcome back to MINEPRO!", "success");
+                showAppUI();
+            } else {
+                showToast("Invalid credentials! Check number & password.", "error");
+            }
+        }
 
-// Initial start if already signed up
-if(savedName) {
-    startWaiting();
-}
-</script>
+        function logout() {
+            localStorage.removeItem('session_user');
+            currentUser = null;
+            showToast("Logged out successfully", "info");
+            showAuthUI();
+        }
 
+        function syncUser() {
+            const users = JSON.parse(localStorage.getItem('users'));
+            const idx = users.findIndex(u => u.mobile === currentUser.mobile);
+            if (idx !== -1) {
+                users[idx] = currentUser;
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+            updateUI();
+        }
+
+        // RENDER VIP PACKAGES
+        function renderVipCards() {
+            const container = document.getElementById('vip-cards-container');
+            container.innerHTML = VIP_PLANS.map(plan => {
+                const totalReturn = plan.daily * plan.days;
+                return `
+                    <div class="glass-panel rounded-3xl p-6 border border-slate-200/80 hover:border-neon-orange/40 transition-all duration-300 flex flex-col justify-between card-tilt shadow-glass hover:shadow-card-hover group">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="bg-neon-lightOrange text-neon-orange border border-neon-orange/20 font-black text-[10px] px-3 py-1 rounded-full uppercase tracking-wider">
+                                    ${plan.badge}
+                                </span>
+                                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-neon-orange to-neon-gold text-white flex items-center justify-center text-lg shadow-neon-sm group-hover:scale-110 transition duration-300">
+                                    <i class="fa-solid ${plan.icon}"></i>
+                                </div>
+                            </div>
+
+                            <h3 class="text-xl font-black text-slate-900 tracking-tight">${plan.name}</h3>
+
+                            <div class="my-4">
+                                <p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Node Investment</p>
+                                <p class="text-3xl font-black text-slate-900 font-mono">৳ ${plan.price.toLocaleString()}</p>
+                            </div>
+
+                            <div class="space-y-2 bg-surface-50 p-4 rounded-2xl border border-slate-100 text-xs font-semibold mb-6">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500">Daily Profit:</span>
+                                    <span class="text-emerald-600 font-black font-mono">৳ ${plan.daily.toLocaleString()}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500">60-Day Return:</span>
+                                    <span class="text-neon-orange font-black font-mono">৳ ${totalReturn.toLocaleString()}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500">Validity Term:</span>
+                                    <span class="text-slate-900 font-bold">${plan.days} Days</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="activateVipPlan(${plan.id})" class="gradient-orange-btn w-full py-3.5 rounded-2xl text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-bolt-lightning"></i> Activate Now
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ACTIVATE VIP PLAN
+        function activateVipPlan(planId) {
+            const plan = VIP_PLANS.find(p => p.id === planId);
+            if (!plan) return;
+
+            if (currentUser.balance >= plan.price) {
+                currentUser.balance -= plan.price;
+                currentUser.activePlans.push({
+                    id: plan.id,
+                    name: plan.name,
+                    daily: plan.daily,
+                    activatedAt: new Date().toISOString()
+                });
+
+                addTransaction('Plan Purchase', plan.name, plan.price, 'Success', `BUY-${Date.now().toString().slice(-6)}`);
+                syncUser();
+                showToast(`Successfully activated ${plan.name}!`, "success");
+            } else {
+                showToast(`Insufficient balance! Redirecting to deposit page...`, "warning");
+                document.getElementById('deposit-amount').value = plan.price;
+                switchTab('deposit');
+            }
+        }
+
+        // CLAIM DAILY REWARD
+        function claimDailyProfit() {
+            if (!currentUser.activePlans || currentUser.activePlans.length === 0) {
+                showToast("No active VIP plans! Activate a node first.", "error");
+                return;
+            }
+
+            const today = new Date().toDateString();
+            if (currentUser.lastClaimDate === today) {
+                showToast("Daily profit already claimed today! Check back tomorrow.", "warning");
+                return;
+            }
+
+            const totalDaily = currentUser.activePlans.reduce((sum, p) => sum + p.daily, 0);
+            currentUser.balance += totalDaily;
+            currentUser.totalMined = (currentUser.totalMined || 0) + totalDaily;
+            currentUser.lastClaimDate = today;
+
+            addTransaction('Mining Earnings', 'Daily Yield Harvest', totalDaily, 'Success', `CLAIM-${Date.now().toString().slice(-6)}`);
+            syncUser();
+            showToast(`Harvested ৳ ${totalDaily.toLocaleString()} TK into your balance!`, "success");
+        }
+
+        // PAYMENT METHOD TOGGLE
+        function selectPaymentMethod(method) {
+            selectedGateway = method;
+            const bkashBtn = document.getElementById('btn-method-bkash');
+            const nagadBtn = document.getElementById('btn-method-nagad');
+            const gatewayLabel = document.getElementById('selected-gateway-label');
+
+            if (method === 'bkash') {
+                bkashBtn.className = "glass-panel p-4 rounded-2xl flex items-center justify-center gap-3 border-2 border-pink-500 bg-pink-50 text-pink-600 font-extrabold transition shadow-sm";
+                nagadBtn.className = "glass-panel p-4 rounded-2xl flex items-center justify-center gap-3 border-2 border-transparent text-slate-400 font-extrabold hover:border-orange-300 transition";
+                gatewayLabel.innerText = "bKash";
+                gatewayLabel.className = "text-pink-400 font-bold";
+            } else {
+                nagadBtn.className = "glass-panel p-4 rounded-2xl flex items-center justify-center gap-3 border-2 border-orange-500 bg-orange-50 text-orange-600 font-extrabold transition shadow-sm";
+                bkashBtn.className = "glass-panel p-4 rounded-2xl flex items-center justify-center gap-3 border-2 border-transparent text-slate-400 font-extrabold hover:border-pink-300 transition";
+                gatewayLabel.innerText = "Nagad";
+                gatewayLabel.className = "text-orange-400 font-bold";
+            }
+        }
+
+        function copyDepositNumber() {
+            const num = document.getElementById('deposit-number-text').innerText;
+            const temp = document.createElement("input");
+            temp.value = num;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand("copy");
+            document.body.removeChild(temp);
+            showToast("Copied Number: " + num, "info");
+        }
+
+        function handleDepositSubmit(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('deposit-amount').value);
+            const sender = document.getElementById('deposit-sender').value.trim();
+            const trxId = document.getElementById('deposit-trxid').value.trim();
+
+            if (amount < 100) {
+                showToast("Minimum deposit amount is 100 TK", "warning");
+                return;
+            }
+
+            // Save deposit as PENDING with 2-hour completion timestamp (7,200,000 ms)
+            const submissionTime = Date.now();
+            const processDuration = 2 * 60 * 60 * 1000; // 2 hours
+            const approveTime = submissionTime + processDuration;
+
+            addTransaction('Deposit', `${selectedGateway.toUpperCase()} (${sender})`, amount, 'Pending', trxId, approveTime);
+
+            document.getElementById('deposit-form').reset();
+            
+            // Detailed popup message notification
+            showToast(`ডিপোজিট প্রসেসিং হচ্ছে (TrxID: ${trxId}) - আপনার ব্যালেন্স আগামী ২ ঘণ্টার মধ্যে যোগ হবে`, "warning");
+            
+            updateUI();
+            switchTab('history');
+        }
+
+        // BACKGROUND CHECKER FOR 2-HOUR DEPOSITS
+        function startDepositStatusChecker() {
+            setInterval(() => {
+                checkPendingDeposits();
+                renderHistoryTable();
+            }, 1000);
+        }
+
+        function checkPendingDeposits() {
+            if (!currentUser) return;
+            const transactions = JSON.parse(localStorage.getItem('transactions'));
+            let updated = false;
+            const now = Date.now();
+
+            transactions.forEach(t => {
+                if (t.userMobile === currentUser.mobile && t.type === 'Deposit' && t.status === 'Pending') {
+                    if (t.approveTime && now >= t.approveTime) {
+                        t.status = 'Approved';
+                        currentUser.balance += t.amount;
+                        updated = true;
+                        showToast(`🎉 deposit of ৳ ${t.amount.toLocaleString()} (TrxID: ${t.trxId}) has been APPROVED and added to balance!`, "success");
+                    }
+                }
+            });
+
+            if (updated) {
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                syncUser();
+            }
+        }
+
+        // SIMULATION ROUTINE TO FAST FORWARD 2 HOURS FOR TESTING
+        function fastForwardPendingDeposits() {
+            if (!currentUser) return;
+            const transactions = JSON.parse(localStorage.getItem('transactions'));
+            let count = 0;
+
+            transactions.forEach(t => {
+                if (t.userMobile === currentUser.mobile && t.type === 'Deposit' && t.status === 'Pending') {
+                    t.approveTime = Date.now() - 1000; // force approve
+                    count++;
+                }
+            });
+
+            if (count > 0) {
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                checkPendingDeposits();
+                showToast(`Simulated 2-hour fast-forward for ${count} deposit(s)!`, "success");
+            } else {
+                showToast("No pending deposits to fast-forward.", "info");
+            }
+        }
+
+        // TRANSACTION LEDGER WITH APPROVE TIMESTAMP
+        function addTransaction(type, method, amount, status, trxId, approveTime = null) {
+            const transactions = JSON.parse(localStorage.getItem('transactions'));
+            transactions.unshift({
+                userMobile: currentUser.mobile,
+                type,
+                method,
+                amount,
+                status,
+                trxId,
+                date: new Date().toLocaleString(),
+                approveTime
+            });
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+        }
+
+        function renderHistoryTable() {
+            const transactions = JSON.parse(localStorage.getItem('transactions'));
+            const userTx = transactions.filter(t => t.userMobile === currentUser.mobile);
+            const body = document.getElementById('history-table-body');
+
+            if (userTx.length === 0) {
+                body.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 font-bold">No transaction records found.</td></tr>`;
+                return;
+            }
+
+            const now = Date.now();
+
+            body.innerHTML = userTx.map(t => {
+                let statusBadge = '';
+                
+                if (t.status === 'Approved' || t.status === 'Success') {
+                    statusBadge = `<span class="bg-emerald-100 text-emerald-600 border border-emerald-300 px-3 py-1 rounded-full text-xs font-black uppercase">Approved</span>`;
+                } else if (t.status === 'Pending') {
+                    let timerText = "Processing...";
+                    if (t.approveTime) {
+                        const remainingMs = Math.max(0, t.approveTime - now);
+                        const totalSec = Math.floor(remainingMs / 1000);
+                        const hrs = String(Math.floor(totalSec / 3600)).padStart(2, '0');
+                        const mins = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
+                        const secs = String(totalSec % 60).padStart(2, '0');
+                        timerText = `⏱️ ${hrs}h ${mins}m ${secs}s remaining`;
+                    }
+                    statusBadge = `<div class="flex flex-col items-start gap-1">
+                        <span class="bg-amber-100 text-amber-600 border border-amber-300 px-3 py-1 rounded-full text-xs font-black uppercase">Pending</span>
+                        <span class="text-[11px] font-mono font-bold text-slate-500">${timerText}</span>
+                    </div>`;
+                } else {
+                    statusBadge = `<span class="bg-rose-100 text-rose-600 border border-rose-300 px-3 py-1 rounded-full text-xs font-black uppercase">Failed</span>`;
+                }
+
+                let isPositive = (t.type === 'Deposit' && t.status === 'Approved') || t.type === 'Mining Earnings';
+                let amountClass = isPositive ? 'text-emerald-600' : 'text-slate-900';
+
+                return `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-4 font-black ${isPositive ? 'text-neon-orange' : 'text-slate-800'}">${t.type}</td>
+                        <td class="p-4 text-slate-600 font-bold">${t.method}</td>
+                        <td class="p-4 font-black font-mono ${amountClass}">${t.type === 'Withdrawal' ? '-' : '+'} ৳ ${t.amount.toLocaleString()}</td>
+                        <td class="p-4 font-mono text-xs text-neon-orange font-bold">${t.trxId}</td>
+                        <td class="p-4">${statusBadge}</td>
+                        <td class="p-4 text-slate-400 text-xs font-medium">${t.date}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // UPDATE METRICS & STATE
+        function updateUI() {
+            if (!currentUser) return;
+
+            document.getElementById('header-balance').innerText = `৳ ${currentUser.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('user-welcome-txt').innerText = `Account: ${currentUser.name} (${currentUser.mobile})`;
+            document.getElementById('active-plans-count').innerText = currentUser.activePlans ? currentUser.activePlans.length : 0;
+            document.getElementById('total-mined-amount').innerText = `৳ ${(currentUser.totalMined || 0).toLocaleString()}`;
+            document.getElementById('last-claim-time').innerText = currentUser.lastClaimDate || "Never";
+
+            const dailyTotal = (currentUser.activePlans || []).reduce((acc, p) => acc + p.daily, 0);
+            document.getElementById('daily-earning-total').innerText = `৳ ${dailyTotal.toLocaleString()} / Day`;
+
+            renderHistoryTable();
+        }
+
+        // LIVE HASHRATE ANIMATION
+        function startLiveHashrate() {
+            setInterval(() => {
+                const base = 480;
+                const jitter = (Math.random() * 15 - 7.5).toFixed(1);
+                const el = document.getElementById('live-hashrate');
+                if (el) el.innerText = `${(base + parseFloat(jitter)).toFixed(1)} TH/s`;
+            }, 3000);
+        }
+
+        // NAVIGATION SWITCHER
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (btn.dataset.tab === tabId) {
+                    btn.className = "nav-btn px-4 py-2.5 rounded-2xl text-sm font-black bg-neon-lightOrange text-neon-orange border border-neon-orange/30 shadow-sm";
+                } else {
+                    btn.className = "nav-btn px-4 py-2.5 rounded-2xl text-sm font-bold text-slate-600 hover:text-neon-orange hover:bg-neon-lightOrange";
+                }
+            });
+
+            document.querySelectorAll('.nav-btn-mobile').forEach(btn => {
+                if (btn.dataset.tab === tabId) {
+                    btn.classList.add('text-neon-orange');
+                    btn.classList.remove('text-slate-500');
+                } else {
+                    btn.classList.remove('text-neon-orange');
+                    btn.classList.add('text-slate-500');
+                }
+            });
+        }
+
+        // TOAST ALERT SYSTEM
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            let bg = 'bg-white border-slate-200 text-slate-800';
+            let icon = 'fa-circle-info text-blue-500';
+
+            if (type === 'success') {
+                bg = 'bg-white border-emerald-300 text-emerald-800';
+                icon = 'fa-circle-check text-emerald-500';
+            } else if (type === 'warning') {
+                bg = 'bg-white border-amber-300 text-amber-800';
+                icon = 'fa-triangle-exclamation text-amber-500';
+            } else if (type === 'error') {
+                bg = 'bg-white border-rose-300 text-rose-800';
+                icon = 'fa-circle-xmark text-rose-500';
+            }
+
+            toast.className = `glass-panel p-4 rounded-2xl border ${bg} shadow-card-hover flex items-center gap-3 transition-all duration-300 pointer-events-auto transform translate-y-2 opacity-0`;
+            toast.innerHTML = `
+                <i class="fa-solid ${icon} text-lg"></i>
+                <span class="text-xs font-extrabold">${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
 </body>
 </html>
+```
